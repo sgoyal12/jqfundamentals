@@ -1,0 +1,21 @@
+//Exercise Selecting Solution
+
+//Select all of the div elements that have a class of "module".
+$(".module");
+
+//Come up with three selectors that you could use to get the third item in the #myList unordered list.
+$("#myList li").eq(2);
+$("#myListItem");
+$("#myList").children("li")[2];
+
+//Select the label for the search input using an attribute selector.
+$("label[for='q']");
+
+//Figure out how many elements on the page are hidden
+$(":hidden").length;
+
+//Figure out how many image elements on the page have an alt attribute.
+$("img[alt]").length;
+
+//Select all of the odd table rows in the table body.
+$("tr:even");
