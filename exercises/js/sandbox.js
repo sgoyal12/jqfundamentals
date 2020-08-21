@@ -4,7 +4,7 @@
 $("div.module");
 
 //Come up with three selectors that you could use to get the third item in the #myList unordered list.
-$("#myList li").eq(2);
+$("#myList>li").eq(2);
 $("#myListItem");
 $("#myList").children("li")[2];
 
@@ -18,4 +18,4 @@ $(":hidden").length;
 $("img[alt]").length;
 
 //Select all of the odd table rows in the table body.
-$("tr:even");
+$("tbody>tr:even");
