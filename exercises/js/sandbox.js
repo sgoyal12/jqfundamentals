@@ -23,9 +23,7 @@ $("#specials select").append("<option>Wednesday</option>");
 // Add a new div.module to the page after the last one; put a copy of one of the existing images inside of it.
 let newImageElement = $("img").first().clone();
 let newModuleElement = $("<div></div>", {
-  "class": "module",
-  id: "image"
+  "class": "module"
 });
-newModuleElement.append("<h2>Image</h2>");
 newModuleElement.append(newImageElement);
 newModuleElement.insertAfter(lastDivModule);
