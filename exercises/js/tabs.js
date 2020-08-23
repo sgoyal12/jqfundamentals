@@ -14,13 +14,14 @@ class TabbedNavigation {
   }
 
   insertListItems() {
-    let listItems = [];
     // Iterate over the modules using $.fn.each. For each module, use the text of the h2 element as the text for a list item that you add to the unordered list element.
-    this.tabs.each(function() {
-      let h2Element = $(this).children("h2");
-      listItems.push("<li>" + h2Element.first().text() + "</li>");
+    this.tabs.each((index, element) => {
+      let jqElement = $(element),
+          h2Element = jqElement.children("h2:first"),
+          listItem = $("<li>" + h2Element.text() + "</li>");
+      listItem.data("tab", jqElement);    
+      this.listElement.append(listItem);
     });
-    this.listElement.append(listItems.join(''));
     // Create an unordered list element before the first module.
     this.listElement.insertBefore(this.tabs.first());
   }
@@ -30,10 +31,10 @@ class TabbedNavigation {
     // Shows the related module, and hides any other modules
     // Adds a class of "current" to the clicked list item
     // Removes the class "current" from the other list item
-    this.listElement.bind("click", function(event) {
+    this.listElement.bind("click", (event) => {
       if(event.target.tagName === "LI") {
         let clickedItem = $(event.target),
-            relatedModule = $("[data-id='" + clickedItem.text().toLowerCase() + "']");
+            relatedModule = clickedItem.data("tab");
         relatedModule.show();
         relatedModule.siblings("div[data-class='module']").hide();
         clickedItem.addClass('current');
@@ -42,5 +43,4 @@ class TabbedNavigation {
     });
   }
 }
-let tabbedNavigation = new TabbedNavigation("div[data-class='module']");
-tabbedNavigation.init();
+(new TabbedNavigation("div[data-class='module']")).init();
