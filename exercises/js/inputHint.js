@@ -1,42 +1,50 @@
 class Hint {
-  constructor(inputSelector, labelSelector) {
-    this.inputFeild = $(inputSelector);
-    this.labelFeild = $(labelSelector);
-    this.labelText = this.labelFeild.text();
+  constructor(options) {
+    this.parentForm = $(options.formSelector);
+    this.inputField = this.parentForm.find(options.inputSelector);
+    this.labelField = this.parentForm.find(options.labelSelector);
   }
 
   init() {
     this.removeLabelFeild();
-    this.bindFocusEvent();
-    this.bindBlurEvent();
+    this.bindEventHandlers();
   }
 
   removeLabelFeild() {
     // Set the value of the search input to the text of the label element
-    this.inputFeild.val(this.labelText);
+    let labelText = this.labelField.text();
+    this.inputField.data("labelText", labelText);
+    this.inputField.val(labelText);
     // Add a class of "hint" to the search input
-    this.inputFeild.addClass("hint");
+    this.inputField.addClass("hint");
     // Remove the label element
-    this.labelFeild.remove();
+    this.labelField.remove();
   }
 
-  bindFocusEvent() {
+  bindEventHandlers() {
     // Bind a focus event to the search input that removes the hint text and the "hint" class
-    this.inputFeild.bind("focus", function() {
-      let element = $(this);
-      element.val("");
-      element.removeClass("hint");
-    });
+    this.inputField.focus(this.focusEventHandler);
+    // Bind a blur event to the search input that restores the hint text and "hint" class if no search text was entered
+    this.inputField.blur(this.blurEventHandler);
+
   }
 
-  bindBlurEvent() {
-    // Bind a blur event to the search input that restores the hint text and "hint" class if no search text was entered
-    this.inputFeild.bind("blur", { labelText: this.labelText }, function(event) {
-        let element = $(this);
-        element.val(event.data.labelText);
-        element.addClass("hint");
-      })
+  focusEventHandler() {
+    let element = $(this);
+    element.val("");
+    element.removeClass("hint");
+  }
+
+  blurEventHandler() {
+    let element = $(this);
+    element.val(element.data("labelText"));
+    element.addClass("hint");
   }
 }
-let hint = new Hint("[data-input-hint='input_feild']", "[data-input-hint-label='input_label_feild']");
-hint.init();
+$(function() {
+  let options = { inputSelector: "[data-input-hint='input-field']",
+                  labelSelector: "[data-input-hint-label='input-label-field']",
+                  formSelector: "[data-input-hint-form='hint-form']" };
+  let hint = new Hint(options);
+  hint.init();
+});
