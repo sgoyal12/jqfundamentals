@@ -30,28 +30,44 @@ class LoadJson {
   bindChangeEvent() {
     this.$select.bind("change", (event) => {
       const val = this.$select.val();
-      if(this.data) {
-        this.setContentDiv(val);
+      this.setContentDivWithData(val);
+    });
+  }
+
+  setContentDivWithData(value) {
+    this.promiseToFetchDataService().then(resultData => {
+      this.setContentDiv(value);
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+
+  promiseToFetchDataService() {
+    return new Promise((resolve, reject) => {
+      if(!this.data) {
+        this.fetchSpecialsData(resolve, reject);
       }
-      else {    
-        this.fetchSpecialsData(val);
+      else {
+        resolve(this.data);
       }
     });
   }
 
-  fetchSpecialsData(value) {
-    $.getJSON("data/specials.json", (data) => {
+  fetchSpecialsData(resolve, reject) {
+    $.getJSON("data/specials.json", data => {
       this.data = data;
-      this.setContentDiv(value);
+      resolve(data);
+    }).fail((jqxhr, textStatus, error) => {
+      reject(new Error(`There was a ${error} Error`));
     });
   }
   
   setContentDiv(value) {
     const valueData = this.data[value];
     if(valueData) {
-      let html = `<h3>${valueData.title}</h3>`;
-      html += `<p>${valueData.text}</p>`;
-      html += `<img src='/exercises${valueData.image}' alt='${valueData.title}'/>`
+      const html = `<h3>${valueData.title}</h3>
+      <p>${valueData.text}</p>
+      <img src='/exercises${valueData.image}' alt='${valueData.title}'/>`;
       this.$select.data('content').html(html);
     }
     else {
@@ -59,5 +75,4 @@ class LoadJson {
     }
   }
 }
-const loadJson = new LoadJson();
-loadJson.init();
+(new LoadJson()).init();
