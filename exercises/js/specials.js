@@ -5,48 +5,59 @@
 // Add some HTML about the special to the target div you created.
 // Finally, because the form is now Ajax-enabled, remove the submit button from the form.
 // Note: that we're loading the JSON every time the user changes their selection. How could we change the code so we only make the request once, and then use a cached response when the user changes their choice in the select?
+const DEFAULT_OPTIONS = { containerSelector: '[data-load-json-container="container"]',
+                          removeButton: "input[type='submit']" };
 class LoadJson {
-  constructor(containerSelector) {
-    this.container = $(containerSelector);
-    this.form = this.container.find("form");
-    this.content = $("<div></div>");
-    this.select = this.form.find("select");
+  constructor(options) {
+    this.options = Object.assign({}, DEFAULT_OPTIONS, options);
+    this.$container = $(this.options.containerSelector);
+    this.$form = this.$container.find("form");
+    this.$select = this.$form.find("select");
   }
 
   init() {
-    this.content.insertAfter(this.form);
-    this.select.data("content", this.content);
+    const $divContainer = $("<div></div>");
+    $divContainer.insertAfter(this.$form);
+    this.$select.data("content", $divContainer);
     this.bindChangeEvent();
     this.removeSubmitButton();
   }
 
   removeSubmitButton() {
-    this.form.find("input[type='submit']").remove();
+    this.$form.find(this.options.removeButton).remove();
   }
 
   bindChangeEvent() {
-    this.select.bind("change", (event) => {
-      let val = this.select.val();
-      if(this.select.data('valueData')) {
+    this.$select.bind("change", (event) => {
+      const val = this.$select.val();
+      if(this.data) {
         this.setContentDiv(val);
       }
       else {    
-        $.getJSON("data/specials.json", (data) => {
-          this.select.data("valueData", data);
-          this.setContentDiv(val);
-        });
+        this.fetchSpecialsData(val);
       }
     });
   }
 
+  fetchSpecialsData(value) {
+    $.getJSON("data/specials.json", (data) => {
+      this.data = data;
+      this.setContentDiv(value);
+    });
+  }
+  
   setContentDiv(value) {
-    let data = this.select.data("valueData"),
-        valueData = data[value],
-        html = "<h3>" + valueData.title + "</h3>";
-    html += "<p>" + valueData.text + "</p>";
-    html += "<img src='/exercises" + valueData.image + "' alt='" + valueData.title +"'/>"
-    this.select.data('content').html(html);
+    const valueData = this.data[value];
+    if(valueData) {
+      let html = `<h3>${valueData.title}</h3>`;
+      html += `<p>${valueData.text}</p>`;
+      html += `<img src='/exercises${valueData.image}' alt='${valueData.title}'/>`
+      this.$select.data('content').html(html);
+    }
+    else {
+      this.$select.data('content').html("");
+    }
   }
 }
-let loadJson = new LoadJson('[data-load-json-container="container"]');
+const loadJson = new LoadJson();
 loadJson.init();
