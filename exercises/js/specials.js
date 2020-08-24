@@ -55,14 +55,10 @@ class LoadJson {
       });
     });
   }
-
-  fetchSpecialsData(resolve, reject) {
-    
-  }
   
   setContentDiv(value) {
     const valueData = this.data[value];
-    let markup = ``;
+    let markup = '';
     if(valueData) {
       markup = `<h3>${valueData.title}</h3>
                 <p>${valueData.text}</p>
