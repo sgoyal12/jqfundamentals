@@ -1,6 +1,6 @@
 class RevealText {
-  constructor(listSelector) {
-    this.blogList = $(listSelector);
+  constructor(options) {
+    this.blogList = $(options.listSelector);
   }
 
   init() {
@@ -20,5 +20,8 @@ class RevealText {
     });
   }
 }
-let revealText = new RevealText("[data-id='blog'] ul");
-revealText.init();
+$(document).ready(() => {
+  const options = { listSelector: "[data-id='blog'] ul" },
+      revealText = new RevealText(options);
+  revealText.init();
+});
