@@ -1,8 +1,8 @@
 // Create a target div after the headline for each blog post and store a reference to it on the headline element using $.fn.data.
 // Bind a click event to the headline that will use the $.fn.load method to load the appropriate content from /exercises/data/blog.html into the target div. Don't forget to prevent the default action of the click event.
 class LoadHtml {
-	constructor(containerSelector) {
-		this.container = $(containerSelector);
+	constructor(options) {
+		this.container = $(options.containerSelector);
     this.listOfItems = this.container.children("ul");
 	}
 
@@ -36,5 +36,8 @@ class LoadHtml {
     });
   }
 }
-let loadHtml = new LoadHtml("[data-load-blog-container='container']");
-loadHtml.init();
+$(document).ready(() => {
+  const options = { containerSelector: "[data-load-blog-container='container']" };
+        loadHtml = new LoadHtml(options);
+  loadHtml.init();
+});
