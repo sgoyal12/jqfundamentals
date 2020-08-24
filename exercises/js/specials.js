@@ -44,35 +44,31 @@ class LoadJson {
 
   promiseToFetchDataService() {
     return new Promise((resolve, reject) => {
-      if(!this.data) {
-        this.fetchSpecialsData(resolve, reject);
-      }
-      else {
+      if(this.data) {
         resolve(this.data);
       }
+      $.getJSON("data/specials.json", data => {
+          this.data = data;
+          resolve(data);
+        }).fail((jqxhr, textStatus, error) => {
+          reject(new Error(`There was a ${error} Error`));
+      });
     });
   }
 
   fetchSpecialsData(resolve, reject) {
-    $.getJSON("data/specials.json", data => {
-      this.data = data;
-      resolve(data);
-    }).fail((jqxhr, textStatus, error) => {
-      reject(new Error(`There was a ${error} Error`));
-    });
+    
   }
   
   setContentDiv(value) {
     const valueData = this.data[value];
+    let markup = ``;
     if(valueData) {
-      const html = `<h3>${valueData.title}</h3>
-      <p>${valueData.text}</p>
-      <img src='/exercises${valueData.image}' alt='${valueData.title}'/>`;
-      this.$select.data('content').html(html);
+      markup = `<h3>${valueData.title}</h3>
+                <p>${valueData.text}</p>
+                <img src='/exercises${valueData.image}' alt='${valueData.title}'/>`;
     }
-    else {
-      this.$select.data('content').html("");
-    }
+    this.$select.data('content').html(markup);
   }
 }
 (new LoadJson()).init();
