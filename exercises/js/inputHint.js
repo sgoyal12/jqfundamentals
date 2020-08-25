@@ -1,7 +1,7 @@
 class SearchHandler {
   constructor(options) {
     this.parentForm = $(options.formSelector);
-    this.className = options.className;
+    this.className = options.hintClassName;
     this.inputField = this.parentForm.find(options.inputSelector);
     this.labelField = this.parentForm.find(options.labelSelector);
   }
@@ -19,15 +19,29 @@ class SearchHandler {
     this.labelField.remove();
   }
 
-  setLabelText() {
-    const labelText = this.labelField.text();
-    this.inputField.val(labelText);
+  setInputFieldValue(value) {
+    this.inputField.val(value);
+  }
+
+  setClassInputField() {
     this.inputField.addClass(this.className);
   }
 
-  removeLabelText() {
-    this.inputField.val("");
+  removeClassInputField() {
     this.inputField.removeClass(this.className);
+  }
+
+  setLabelText() {
+    var labelText = this.labelField.text();
+    this.setInputFieldValue(labelText);
+    this.setClassInputField();
+    
+  }
+
+  removeLabelText() {
+    this.setInputFieldValue("");
+    this.removeClassInputField();
+    
   }
 
   bindEventHandlers() {
@@ -43,7 +57,7 @@ $(function() {
     inputSelector: "[data-input-hint='input-field']",
     labelSelector: "[data-input-hint-label='input-label-field']",
     formSelector: "[data-input-hint-form='hint-form']",
-    className: "hint"
+    hintClassName: "hint"
   };
   let searchHandler = new SearchHandler(options);
   searchHandler.init();
