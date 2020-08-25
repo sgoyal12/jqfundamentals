@@ -18,10 +18,10 @@
 <body>
 	<div id="header">
 		<div id="logo" rel="logo"><a href="index.html">jQuery Fundamentals</a></div>
-		<ul id="nav">
-			<li class="selected"><a href="http://docs.jquery.com">jQuery Docs</a></li>
-			<li><a href="sandbox.html">Sandbox</a></li>
-			<li>Resources
+		<ul id="nav" data-nav-main-menu='main_menu'>
+			<li class="selected" data-nav-menu-item='item'><a href="http://docs.jquery.com">jQuery Docs</a></li>
+			<li data-nav-menu-item='item'><a href="sandbox.html">Sandbox</a></li>
+			<li data-nav-menu-item='item'>Resources
 				<ul>
 					<li><a href="http://groups.google.com/group/jquery-en">Google Group</a></li>
 					<li><a href="http://stackoverflow.com">Stack Overflow</a></li>
@@ -148,10 +148,11 @@
 	</div>
 
 <script src="libs/jquery-1.5.0.js"></script>
+<script src="js/navigation.js"></script>
 <!--
 <script src="js/sandbox.js"></script>
 <script src="js/hoverClass.js"></script>
-<script src="js/navigation.js"></script>
+
 <script src="js/blog.js"></script>
 <script src="js/specials.js"></script>
 <script src="js/slideshow.js"></script>
