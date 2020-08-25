@@ -1,20 +1,17 @@
 //Exercise Manipulating Solution
 
 //Add five new list items to the end of the unordered list #myList.
-let list = $("#myList"),
-    newItems = [];
-for(let i=0; i<5; i++) {
-  newItems.push("<li>New Item " + (i+1) + "</li>");
-}
+const list = $("#myList"),
+      newItems = (Array(5).fill('')).map((value, index) => `<li>New Item ${index+1}</li>`);    
 list.append(newItems.join(""));
 
 //Remove the odd list items
 $("#myList li:even").remove();
 
 // Add another h2 and another paragraph to the last div.module
-let lastDivModule = $("div.module").last();
-let newElementsForDivModule = "<h2>Adding a new Heading</h2>";
-newElementsForDivModule += "<p>New paragraph is being added</p>";
+const lastDivModule = $("div.module").last(),
+      newElementsForDivModule = `<h2>Adding a new Heading</h2>
+                                 <p>New paragraph is being added</p>`;
 lastDivModule.append(newElementsForDivModule);
 
 // Add another option to the select element; give the option the value "Wednesday"
