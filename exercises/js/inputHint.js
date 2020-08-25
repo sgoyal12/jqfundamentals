@@ -1,7 +1,7 @@
 class SearchHandler {
   constructor(options) {
     this.parentForm = $(options.formSelector);
-    this.className = options.hintClassName;
+    this.hintClassName = options.hintClassName;
     this.inputField = this.parentForm.find(options.inputSelector);
     this.labelField = this.parentForm.find(options.labelSelector);
   }
@@ -23,24 +23,24 @@ class SearchHandler {
     this.inputField.val(value);
   }
 
-  setClassInputField() {
-    this.inputField.addClass(this.className);
+  setClassInputField(className) {
+    this.inputField.addClass(className);
   }
 
-  removeClassInputField() {
-    this.inputField.removeClass(this.className);
+  removeClassInputField(className) {
+    this.inputField.removeClass(className);
   }
 
   setLabelText() {
     var labelText = this.labelField.text();
     this.setInputFieldValue(labelText);
-    this.setClassInputField();
+    this.setClassInputField(this.hintClassName);
     
   }
 
   removeLabelText() {
     this.setInputFieldValue("");
-    this.removeClassInputField();
+    this.removeClassInputField(this.hintClassName);
     
   }
 
