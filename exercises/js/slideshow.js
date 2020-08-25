@@ -9,58 +9,124 @@
 // When you get to the end of the list, start again at the beginning.
 
 // For an extra challenge, create a navigation area under the slideshow that shows how many images there are and which image you're currently viewing. (Hint: $.fn.prevAll will come in handy for this.)
+const ANIMATION_SLIDESHOW_TIME = 3000;
 class SlideShow {
-  constructor(contentSelector) {
-    this.slideshowContent = $(contentSelector);
+  constructor(options) {
+    this.slideshowContainer = $(options.containerSelector);
+    this.slideshowContent = $(options.contentSelector);
+    this.slideshowNext = $(options.nextSelector);
+    this.slideshowPrev = $(options.prevSelector);
     this.listOfItems = this.slideshowContent.children();
-    //this.listOfDots = slideshowNavigation.children();
+    this.timeForAnimation = options.timeForAnimation;
+    this.currentItem = 0;
   }
 
   init() {
-    $("body").prepend(this.slideshowContent);
+    $("body").prepend(this.slideshowContainer);
     this.setupNavigation();
-    this.listOfItems.hide();
-    this.startSlideShow();
+    if(this.listOfItems.length !== 1) {
+      this.listOfItems.hide();
+      this.addClickEventHandlers();
+      this.showElement(this.currentItem);
+    }
+    else{
+      this.listOfDots.eq(0).addClass("active");
+      this.hideArrowNavigation();
+    }
+  }
+
+  addClickEventHandlers() {
+    this.slideshowNext.bind("click", this.nextClickEventHandler.bind(this));
+    this.slideshowPrev.bind("click", this.prevClickEventHandler.bind(this));
+  }
+
+  hideArrowNavigation() {
+    this.slideshowNext.hide();
+    this.slideshowPrev.hide();
+  }
+
+  prevClickEventHandler() {
+    this.listOfItems.eq(this.currentItem).stop(true, true).hide();
+    this.currentItem = this.getPrevItemIndex(this.currentItem);
+    this.showElement();
+  }
+
+  nextClickEventHandler() {
+    this.listOfItems.eq(this.currentItem).stop(true, true).hide();
+    this.currentItem = this.getNextItemIndex(this.currentItem);
+    this.showElement();
   }
 
   setupNavigation() {
-    let length = this.listOfItems.length;
-    let divNav = $("<div></div>");
-    divNav.css("text-align", "center");
-    for(let i = 0; i < length; i++) {
-      divNav.append("<span class='dot'></span>");
+    let navigationContainer = $("<div></div>");
+    navigationContainer.addClass("navigationContainer");
+    this.listOfItems.map(() => {
+      navigationContainer.append("<span class='dot'></span>");
+    });
+    navigationContainer.insertAfter(this.slideshowContent);
+    navigationContainer.delegate("span", "click", this.navigationDotClicked.bind(this));
+    this.listOfDots = navigationContainer.children();
+  }
+
+  getNextItemIndex(index) {
+    if(index + 1 < this.listOfItems.length) {
+      return index + 1;
     }
-    divNav.insertAfter(this.slideshowContent);
-    this.listOfDots = divNav.children();
+    else {
+      return 0;
+    }
   }
 
-  startSlideShow() {
-    let length = this.listOfItems.length,
-        startIndex = 1;
-    setInterval(() => {
-      this.fadingElement(startIndex);
-      if(startIndex + 1 < length) {
-        startIndex++;
-      }
-      else {
-        startIndex = 0;
-      }
-    }, 4000);
-    this.fadingElement(0);
+  getPrevItemIndex(index) {
+    if(index - 1 >= 0) {
+      return index - 1;
+    }
+    else {
+      return this.listOfItems.length - 1;
+    }
   }
 
-  fadingAnimation(element) {
-    element.fadeIn(1000);
-    element.delay(2000).fadeOut(1000);
+  navigationDotClicked(event) {
+    let $target = $(event.target),
+        currentIndex = $target.index();
+    this.listOfItems.eq(this.currentItem).stop(true, true).hide();
+    this.currentItem = currentIndex;
+    this.showElement();    
   }
 
-  fadingElement(index) {
-    let element = this.listOfItems.eq(index),
-        navigationDot = this.listOfDots.eq(index);
-    this.fadingAnimation(element);
+  setNextSlide() {
+    this.intervalPeriod = setTimeout(() => {
+      this.currentItem = this.getNextItemIndex(this.currentItem);
+      this.showElement();
+    }, this.timeForAnimation);
+  }
+
+  stopSlideShow() {
+    clearTimeout(this.intervalPeriod);
+  }
+
+
+  showSlide(element) {
+    element.fadeIn(this.timeForAnimation/8);
+    element.delay(this.timeForAnimation*3/4).fadeOut(this.timeForAnimation/8);
+  }
+
+  showElement() {
+    this.stopSlideShow();
+    let elementToShow = this.listOfItems.eq(this.currentItem),
+        navigationDot = this.listOfDots.eq(this.currentItem);
+    this.showSlide(elementToShow);
     navigationDot.addClass("active");
-    navigationDot.siblings().removeClass("active");    
+    navigationDot.siblings().removeClass("active");
+    this.setNextSlide();
   }
 }
-let slideshow = new SlideShow("[data-slideshow-content='content']");
+let options = {
+  containerSelector: "[data-slideshow-container='container']",
+  contentSelector: "[data-slideshow-content='content']",
+  nextSelector: "[data-slideshow-next='next']",
+  prevSelector: "[data-slideshow-prev='prev']",
+  timeForAnimation: ANIMATION_SLIDESHOW_TIME
+};
+let slideshow = new SlideShow(options);
 slideshow.init();
