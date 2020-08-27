@@ -1,43 +1,32 @@
-class DropDownMenu {
+class Navigation {
   constructor(options) {
+    this.options = options
     this.mainMenu = $(options.mainMenuSelector);
-    this.menuItems = this.mainMenu.children(options.menuItemSelector);
+    this.menuItems = this.mainMenu.find(options.menuItemSelector);
   }
 
   init() {
-    this.menuItems.hover(this.hoverEventHandler.bind(this));
+    this.menuItems.hover(this.hoverInEventHandler.bind(this),
+                         this.hoverOutEventHandler.bind(this));
   }
 
-  hoverEventHandler(event) {
-    let target = $(event.target);
-    let subMenu = target.children("ul");
-    if(event.type === "mouseenter") {
-      this.hoverInEventHandler(target, subMenu);
-    }
-    else {
-      this.hoverOutEventHandler(target, subMenu);
-    }
+  hoverInEventHandler() {
+    let target = $(event.target).addClass(this.options.hoverClass);
+    target.find(this.options.subMenuItemSelector).show();
   }
 
-  hoverInEventHandler(target, subMenu) {
-    target.addClass("hover");
-    if(subMenu.length) {
-      subMenu.show();
-    }
-  }
-
-  hoverOutEventHandler(target, subMenu) {
-    target.removeClass("hover");
-    if(subMenu.length) {
-      subMenu.hide();
-    }
+  hoverOutEventHandler() {
+    let target = $(event.target).removeClass(this.options.hoverClass);
+    target.find(this.options.subMenuItemSelector).hide();
   }
 }
-$(document).ready(() => {
+$(() => {
   let options = {
     mainMenuSelector: "[data-nav-main-menu='main_menu']",
-    menuItemSelector: "[data-nav-menu-item='item']"
+    menuItemSelector: "[data-nav-menu-item='item']",
+    subMenuItemSelector: "[data-nav-sub-menu-item='item']",
+    hoverClass: "hover"
   };
-  let dropDownMenu = new DropDownMenu(options);
-  dropDownMenu.init();
+  let navigation = new Navigation(options);
+  navigation.init();
 });
