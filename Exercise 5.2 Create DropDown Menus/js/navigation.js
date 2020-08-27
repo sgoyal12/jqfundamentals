@@ -1,4 +1,4 @@
-class DropDownMenu {
+class Navigation {
   constructor(options) {
     this.options = options
     this.mainMenu = $(options.mainMenuSelector);
@@ -11,26 +11,22 @@ class DropDownMenu {
   }
 
   hoverInEventHandler() {
-    let target = $(event.target);
-    let subMenu = target.find(this.options.subMenuItemSelector);
-    target.addClass(this.options.hoverClass);
-    subMenu.show();
+    let target = $(event.target).addClass(this.options.hoverClass);
+    target.find(this.options.subMenuItemSelector).show();
   }
 
   hoverOutEventHandler() {
-    let target = $(event.target);
-    let subMenu = target.find(this.options.subMenuItemSelector);
-    target.removeClass(this.options.hoverClass);
-    subMenu.hide();
+    let target = $(event.target).removeClass(this.options.hoverClass);
+    target.find(this.options.subMenuItemSelector).hide();
   }
 }
-$(document).ready(() => {
+$(() => {
   let options = {
     mainMenuSelector: "[data-nav-main-menu='main_menu']",
     menuItemSelector: "[data-nav-menu-item='item']",
     subMenuItemSelector: "[data-nav-sub-menu-item='item']",
     hoverClass: "hover"
   };
-  let dropDownMenu = new DropDownMenu(options);
-  dropDownMenu.init();
+  let navigation = new Navigation(options);
+  navigation.init();
 });
