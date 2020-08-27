@@ -8,7 +8,7 @@ class ContentLoader {
 
   init() {
     this.addDivForContent();
-    this.listOfItems.bind("click", this.listItemClickEventHandler.bind(this));
+    this.listOfItems.on("click", "li", this, this.listItemClickEventHandler);
   }
 
   addDivForContent() {
@@ -20,32 +20,35 @@ class ContentLoader {
 
   createDivForListItem(index, item) {
     let $item = $(item),
-        div = $("<div></div>"),
-        id = $item.find("a").attr("href");
-    div.insertAfter($item.children(this.options.addDivAfterSelector));
-    $item.data({ 
-      "contentDiv": div,
+        $div = $(`<div data-blog-id="${index}"></div>`),
+        id = $item.find("a").attr("href"),
+        $headLine = $item.children("h3");
+    $div.insertAfter($headLine);
+    $headLine.data({ 
+      "divReferenceId": `[data-blog-id="${index}"]`,
       "contentId": id
     });
   }
 
   listItemClickEventHandler(event) {
-    let target = $(event.target.closest("li"));
+    let target = $(this);
     if(target) {
       event.preventDefault();
-      this.loadContentInsideDiv(target);
+      event.data.loadContentInsideDiv(target);
     }
   }
 
   loadContentInsideDiv(target) {
-    let post = target.data("contentId");
-    target.data("contentDiv").load("data/" + post);
+    let $headLine = target.find("h3"),
+        post = $headLine.data("contentId"),
+        contentDivId = $headLine.data("divReferenceId"),
+        $contentDiv = target.find(contentDivId); 
+    $contentDiv.load("data/" + post.replace("#", " #"));
   }
 }
 $(document).ready(() => {
   const options = { 
-    listSelector: "[data-load-blog-list='list']",
-    addDivAfterSelector: "[data-content-div-after='true']"
+    listSelector: "[data-load-blog-list='list']"
   };
   let contentLoader = new ContentLoader(options);
   contentLoader.init();
