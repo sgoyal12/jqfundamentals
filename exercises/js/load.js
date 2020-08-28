@@ -2,40 +2,44 @@
 // Bind a click event to the headline that will use the $.fn.load method to load the appropriate content from /exercises/data/blog.html into the target div. Don't forget to prevent the default action of the click event.
 class ContentLoader {
 	constructor(options) {
-    this.options = options;
 		this.listOfItems = $(options.listSelector);
+    this.dataPath = options.dataPath;
 	}
 
   init() {
     this.addDivForContent();
-    this.listOfItems.on("click", "li", this, this.listItemClickEventHandler);
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    this.listOfItems.on("click", "li", this, (event) =>{
+      let target = $(event.target.closest("li"));
+      if(target) {
+        event.preventDefault();
+        event.data.loadContentInsideDiv(target);
+      }
+    });
   }
 
   addDivForContent() {
     let parent = this.listOfItems.parent();
     this.listOfItems.detach();
-    this.listOfItems.children("li").each(this.createDivForListItem.bind(this));
+    this.createDivsForListItems();
     parent.append(this.listOfItems);
   }
 
-  createDivForListItem(index, item) {
-    let $item = $(item),
-        $div = $(`<div data-blog-id="${index}"></div>`),
-        id = $item.find("a").attr("href"),
-        $headLine = $item.children("h3");
-    $div.insertAfter($headLine);
-    $headLine.data({ 
-      "divReferenceId": `[data-blog-id="${index}"]`,
-      "contentId": id
+  createDivsForListItems() {
+    this.listOfItems.children("li").each((index, item) => {
+      let $item = $(item),
+          $div = $(`<div data-blog-id="${index}"></div>`),
+          id = $item.find("a").attr("href"),
+          $headLine = $item.children("h3");
+      $div.insertAfter($headLine);
+      $headLine.data({ 
+        "divReferenceId": `[data-blog-id="${index}"]`,
+        "contentId": id
+      });
     });
-  }
-
-  listItemClickEventHandler(event) {
-    let target = $(this);
-    if(target) {
-      event.preventDefault();
-      event.data.loadContentInsideDiv(target);
-    }
   }
 
   loadContentInsideDiv(target) {
@@ -43,12 +47,13 @@ class ContentLoader {
         post = $headLine.data("contentId"),
         contentDivId = $headLine.data("divReferenceId"),
         $contentDiv = target.find(contentDivId); 
-    $contentDiv.load("data/" + post.replace("#", " #"));
+    $contentDiv.load(this.dataPath + post.replace("#", " #"));
   }
 }
 $(document).ready(() => {
   const options = { 
-    listSelector: "[data-load-blog-list='list']"
+    listSelector: "[data-load-blog-list='list']",
+    dataPath: "data/"
   };
   let contentLoader = new ContentLoader(options);
   contentLoader.init();
