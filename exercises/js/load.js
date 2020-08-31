@@ -12,42 +12,41 @@ class ContentLoader {
   }
 
   bindEvents() {
-    this.listOfItems.on("click", "li", this, (event) =>{
-      let target = $(event.target.closest("li"));
-      if(target) {
-        event.preventDefault();
-        event.data.loadContentInsideDiv(target);
-      }
+    this.listOfItems.on("click", "h3", (event) => {
+      event.preventDefault();
+      let $headLine = $(event.currentTarget),
+          blogSelector = $headLine.data("blogSelector"),
+          postId =  $headLine.data("postId").replace("#", " #");
+      this.loadBlogContent(blogSelector, postId);
     });
   }
 
   addDivForContent() {
     let parent = this.listOfItems.parent();
     this.listOfItems.detach();
-    this.createDivsForListItems();
+    this.createBlogContainerForListItems();
     parent.append(this.listOfItems);
   }
 
-  createDivsForListItems() {
-    this.listOfItems.children("li").each((index, item) => {
-      let $item = $(item),
-          $div = $(`<div data-blog-id="${index}"></div>`),
-          id = $item.find("a").attr("href"),
-          $headLine = $item.children("h3");
-      $div.insertAfter($headLine);
+  createBlogContainerForListItems() {
+    this.listOfItems.find("h3").each((index, item) => {
+      let $headLine = $(item),
+          $blogContainer = $(`<div>`),
+          postId = $headLine.find("a").attr("href");
+      $blogContainer.attr({
+        "data-blog-id": index
+      });
+      $blogContainer.insertAfter($headLine);
       $headLine.data({ 
-        "divReferenceId": `[data-blog-id="${index}"]`,
-        "contentId": id
+        "blogSelector": `[data-blog-id="${index}"]`,
+        "postId": postId
       });
     });
   }
 
-  loadContentInsideDiv(target) {
-    let $headLine = target.find("h3"),
-        post = $headLine.data("contentId"),
-        contentDivId = $headLine.data("divReferenceId"),
-        $contentDiv = target.find(contentDivId); 
-    $contentDiv.load(this.dataPath + post.replace("#", " #"));
+  loadBlogContent(blogSelector, postId) {
+    let $blog = this.listOfItems.find(blogSelector); 
+    $blog.load(this.dataPath + postId);
   }
 }
 $(document).ready(() => {
