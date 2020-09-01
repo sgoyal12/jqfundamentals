@@ -1,10 +1,10 @@
 // Create a target div after the headline for each blog post and store a reference to it on the headline element using $.fn.data.
 // Bind a click event to the headline that will use the $.fn.load method to load the appropriate content from /exercises/data/blog.html into the target div. Don't forget to prevent the default action of the click event.
 class ContentLoader {
-	constructor(options) {
-		this.listOfItems = $(options.listSelector);
+  constructor(options) {
+	  this.listOfItems = $(options.listSelector);
     this.dataPath = options.dataPath;
-	}
+  }
 
   init() {
     this.addDivForContent();
@@ -14,9 +14,9 @@ class ContentLoader {
   bindEvents() {
     this.listOfItems.on("click", "h3", (event) => {
       event.preventDefault();
-      let $headLine = $(event.currentTarget),
-          blogSelector = $headLine.data("blogSelector"),
-          postId =  $headLine.data("postId").replace("#", " #");
+      let $blogTitle = $(event.currentTarget),
+          blogSelector = $blogTitle.data("blogSelector"),
+          postId =  $blogTitle.data("postId");
       this.loadBlogContent(blogSelector, postId);
     });
   }
@@ -30,14 +30,14 @@ class ContentLoader {
 
   createBlogContainerForListItems() {
     this.listOfItems.find("h3").each((index, item) => {
-      let $headLine = $(item),
+      let $blogTitle = $(item),
           $blogContainer = $(`<div>`),
-          postId = $headLine.find("a").attr("href");
+          postId = $blogTitle.find("a").attr("href");
       $blogContainer.attr({
         "data-blog-id": index
       });
-      $blogContainer.insertAfter($headLine);
-      $headLine.data({ 
+      $blogContainer.insertAfter($blogTitle);
+      $blogTitle.data({ 
         "blogSelector": `[data-blog-id="${index}"]`,
         "postId": postId
       });
@@ -45,8 +45,9 @@ class ContentLoader {
   }
 
   loadBlogContent(blogSelector, postId) {
-    let $blog = this.listOfItems.find(blogSelector); 
-    $blog.load(this.dataPath + postId);
+    let $blog = this.listOfItems.find(blogSelector),
+        filePath = postId.split("#");
+    $blog.load(`${this.dataPath + filePath[0]} #${filePath[1]}`);
   }
 }
 $(document).ready(() => {
